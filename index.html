@@ -1,0 +1,2949 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HostCloud - منصة الاستضافة الاحترافية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141e;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(102, 126, 234, 0.15);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-gold: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            --glow-primary: 0 0 40px rgba(102, 126, 234, 0.15);
+            --glow-gold: 0 0 40px rgba(247, 151, 30, 0.25);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 28px;
+            --radius-xl: 40px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(0, 0, 0, 0.02);
+            --bg-glass: rgba(255, 255, 255, 0.8);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #a0aec0;
+            --border-color: rgba(0, 0, 0, 0.06);
+            --border-glow: rgba(102, 126, 234, 0.1);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --glow-primary: 0 0 40px rgba(102, 126, 234, 0.05);
+        }
+
+        /* ===== RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        /* ===== AMBIENT BACKGROUND ===== */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .ambient-bg .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            animation: floatOrb 20s ease-in-out infinite;
+            will-change: transform;
+        }
+        .ambient-bg .orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -10%;
+            right: -10%;
+            background: radial-gradient(circle, #667eea, #764ba2);
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+        .ambient-bg .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            bottom: -10%;
+            left: -10%;
+            background: radial-gradient(circle, #f093fb, #f5576c);
+            animation-delay: -6s;
+            animation-duration: 22s;
+        }
+        .ambient-bg .orb:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            top: 50%;
+            left: 50%;
+            background: radial-gradient(circle, #4facfe, #00f2fe);
+            animation-delay: -12s;
+            animation-duration: 20s;
+            opacity: 0.2;
+        }
+        .ambient-bg .orb:nth-child(4) {
+            width: 300px;
+            height: 300px;
+            top: 20%;
+            right: 30%;
+            background: radial-gradient(circle, #f7971e, #ffd200);
+            animation-delay: -8s;
+            animation-duration: 25s;
+            opacity: 0.15;
+        }
+        .ambient-bg .orb:nth-child(5) {
+            width: 250px;
+            height: 250px;
+            bottom: 30%;
+            right: 20%;
+            background: radial-gradient(circle, #43e97b, #38f9d7);
+            animation-delay: -4s;
+            animation-duration: 16s;
+            opacity: 0.12;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(120px, -80px) scale(1.1) rotate(90deg); }
+            50% { transform: translate(-80px, 120px) scale(0.9) rotate(180deg); }
+            75% { transform: translate(60px, 60px) scale(1.05) rotate(270deg); }
+        }
+
+        /* ===== GLASS HEADER ===== */
+        .glass-header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 1200px;
+            padding: 12px 24px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 60px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-card);
+        }
+        .glass-header.scrolled {
+            top: 0;
+            border-radius: 0;
+            width: 100%;
+            background: var(--bg-glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+        }
+
+        .logo-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -1px;
+            cursor: pointer;
+        }
+        .logo-brand i {
+            -webkit-text-fill-color: #667eea;
+            font-size: 1.6rem;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .header-controls button {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-controls button:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .header-controls .icon-btn {
+            padding: 8px 12px;
+            font-size: 1.1rem;
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notification-container {
+            position: relative;
+            display: inline-block;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #fc8181;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            padding: 12px 0;
+            z-index: 1001;
+        }
+        .notification-dropdown.open {
+            display: block;
+        }
+        .notification-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .notification-item:hover {
+            background: var(--bg-card);
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item .notif-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .notification-item .notif-icon {
+            margin-left: 10px;
+            color: #667eea;
+        }
+
+        /* ===== SECTIONS ===== */
+        .page-section {
+            display: none;
+            animation: fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 40px 0;
+            position: relative;
+        }
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .hero-badge i {
+            color: #667eea;
+            margin-left: 8px;
+        }
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-title .highlight {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: #fff;
+            padding: 14px 36px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: 0.6s;
+        }
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 14px 36px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .btn-gold {
+            background: var(--gradient-gold);
+            color: #1a202c;
+            padding: 14px 36px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(247, 151, 30, 0.3);
+        }
+        .btn-gold:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(247, 151, 30, 0.5);
+        }
+
+        .btn-github-large {
+            background: #24292e;
+            color: #fff;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .btn-github-large:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-sm {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        /* ===== PRICING SECTION ===== */
+        .pricing-section {
+            padding: 80px 0;
+        }
+        .pricing-section .section-label {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .pricing-section h2 {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 40px auto 0;
+        }
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: var(--glow-primary);
+        }
+        .pricing-card.popular {
+            border-color: #667eea;
+            background: var(--bg-glass);
+            box-shadow: var(--glow-primary);
+        }
+        .pricing-card.popular::before {
+            content: '✨ الأكثر شيوعاً';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-primary);
+            color: #fff;
+            padding: 4px 20px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .pricing-card.gold {
+            border-color: #f7971e;
+            background: linear-gradient(135deg, rgba(247, 151, 30, 0.08), rgba(255, 210, 0, 0.05));
+            box-shadow: var(--glow-gold);
+        }
+        .pricing-card.gold::before {
+            content: '👑 الباقة الماسية';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-gold);
+            color: #1a202c;
+            padding: 4px 20px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .pricing-card .plan-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .pricing-card .plan-price {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 16px 0;
+        }
+        .pricing-card .plan-price small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+        .pricing-card .plan-features {
+            list-style: none;
+            margin: 24px 0;
+            text-align: right;
+        }
+        .pricing-card .plan-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+        }
+        .pricing-card .plan-features li i {
+            color: #667eea;
+        }
+        .pricing-card .plan-features li .gold-icon {
+            color: #f7971e;
+        }
+        .pricing-card .btn-primary,
+        .pricing-card .btn-secondary,
+        .pricing-card .btn-gold {
+            width: 100%;
+        }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        .dashboard-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .dashboard-header h2 i {
+            color: #667eea;
+        }
+
+        /* ===== WELCOME BANNER ===== */
+        .welcome-banner {
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md);
+            padding: 30px 36px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+        .welcome-banner h2 {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .welcome-banner p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+        }
+        .welcome-banner .emoji-big {
+            font-size: 3rem;
+            position: absolute;
+            bottom: 10px;
+            left: 30px;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .client-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .client-badge .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        /* ===== DASHBOARD TABS ===== */
+        .dashboard-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            flex-wrap: wrap;
+        }
+        .dashboard-tabs .tab-btn {
+            padding: 10px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            border-radius: var(--radius-sm);
+        }
+        .dashboard-tabs .tab-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+        .dashboard-tabs .tab-btn.active {
+            color: #667eea;
+            background: var(--bg-card);
+            border-bottom: 2px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeUp 0.4s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-4px);
+        }
+        .stat-card .number {
+            font-size: 2.4rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== DOMAIN MANAGEMENT ===== */
+        .domain-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .domain-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .domain-section h3 i {
+            color: #667eea;
+        }
+        .domain-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .domain-box .domain-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .domain-box .domain-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        .domain-box .domain-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .domain-box .domain-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* ===== ACCOUNT SETTINGS ===== */
+        .settings-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .settings-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .settings-section h3 i {
+            color: #667eea;
+        }
+        .settings-form .form-group {
+            margin-bottom: 16px;
+        }
+        .settings-form .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+        .settings-form .form-group input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .settings-form .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .api-key-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .api-key-box .api-key-value {
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+        .api-key-box .copy-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+        .api-key-box .copy-btn:hover {
+            background: #667eea;
+            color: #fff;
+            border-color: #667eea;
+        }
+
+        /* ===== TRAFFIC ===== */
+        .traffic-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .traffic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .traffic-header h3 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .traffic-header h3 i {
+            color: #667eea;
+        }
+        .traffic-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .traffic-stat-item .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .traffic-stat-item .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .traffic-chart-container {
+            height: 200px;
+            margin-top: 16px;
+        }
+
+        .subscription-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .subscription-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .subscription-item {
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .subscription-item .sub-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .subscription-item .sub-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .subscription-item .badge-plan {
+            background: var(--gradient-primary);
+            color: #fff;
+            padding: 2px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+        .renewal-countdown {
+            margin-top: 8px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            display: inline-block;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* ===== TEMPLATE SELECTOR ===== */
+        .template-selector {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .template-selector h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .template-selector h3 i {
+            color: #667eea;
+        }
+
+        .project-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .project-type-btn {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .project-type-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .project-type-btn.active {
+            border-color: #667eea;
+            background: var(--gradient-primary);
+            color: #fff;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .template-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .template-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: var(--glow-primary);
+        }
+        .template-card .thumb {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            position: relative;
+        }
+        .template-card .thumb .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .template-card .info {
+            padding: 14px 16px;
+        }
+        .template-card .info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .template-card .info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .template-card .actions {
+            padding: 10px 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ===== FULL PREVIEW MODAL ===== */
+        .full-preview-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 9999;
+            padding: 40px;
+        }
+        .full-preview-overlay.open {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .full-preview-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            width: 95%;
+            height: 90%;
+            max-width: 1400px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .full-preview-toolbar {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--bg-secondary);
+        }
+        .full-preview-toolbar .title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .full-preview-toolbar .title i {
+            color: #667eea;
+        }
+        .full-preview-toolbar .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .full-preview-content {
+            flex: 1;
+            overflow: auto;
+            padding: 40px;
+            background: var(--bg-primary);
+        }
+        .full-preview-content .site-preview {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            min-height: 500px;
+            position: relative;
+        }
+        .full-preview-content .site-preview h1 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        .full-preview-content .site-preview .demo-img {
+            width: 100%;
+            height: 200px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-sm);
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .full-preview-content .site-preview .demo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .full-preview-content .site-preview .editable {
+            outline: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: var(--transition);
+            cursor: text;
+        }
+        .full-preview-content .site-preview .editable:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        .full-preview-content .site-preview .editable:focus {
+            background: rgba(102, 126, 234, 0.08);
+            box-shadow: 0 0 0 2px #667eea;
+        }
+        .full-preview-content .site-preview .editable-btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: var(--gradient-primary);
+            color: #fff;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .full-preview-content .site-preview .editable-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===== COLOR PICKER ===== */
+        .color-picker-tool {
+            background: var(--bg-primary);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+        .color-picker-tool h5 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .color-picker-tool h5 i {
+            color: #667eea;
+        }
+        .color-picker-tool .color-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .color-picker-tool .color-options input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 2px;
+            background: transparent;
+        }
+        .color-picker-tool .color-options input[type="color"]:hover {
+            border-color: #667eea;
+        }
+        .color-picker-tool .color-presets {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .color-picker-tool .color-presets .preset {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .color-picker-tool .color-presets .preset:hover {
+            transform: scale(1.1);
+            border-color: #667eea;
+        }
+
+        /* ===== WEBSITES LIST ===== */
+        .websites-list {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .websites-list .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .websites-list .header h3 {
+            font-size: 1.2rem;
+        }
+        .website-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .website-item:last-child {
+            border-bottom: none;
+        }
+        .website-item .info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .website-item .info i {
+            font-size: 1.4rem;
+            color: #667eea;
+            width: 32px;
+            text-align: center;
+        }
+        .website-item .info .name {
+            font-weight: 600;
+        }
+        .website-item .info .domain {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .status-badge {
+            padding: 2px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.deployed {
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+        }
+        .status-badge.draft {
+            background: rgba(160, 174, 192, 0.15);
+            color: var(--text-muted);
+        }
+        .status-badge.deploying {
+            background: rgba(237, 137, 54, 0.15);
+            color: #ed8936;
+        }
+
+        /* ===== AUTH FORMS ===== */
+        .auth-form {
+            max-width: 420px;
+            margin: 60px auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        .auth-form h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+        }
+        .auth-form .form-group {
+            margin-bottom: 16px;
+        }
+        .auth-form .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+        .auth-form .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .auth-form .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .auth-form .btn-primary {
+            width: 100%;
+            margin-top: 8px;
+        }
+        .auth-form .social-login {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .auth-form .social-login button {
+            flex: 1;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .auth-form .social-login button:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        .auth-form .switch-link {
+            text-align: center;
+            margin-top: 16px;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .auth-form .switch-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== ADMIN PREVIEW ===== */
+        .admin-preview {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .admin-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+        }
+        .admin-stat h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .admin-stat h4 i {
+            color: #667eea;
+        }
+        .admin-stat .big-number {
+            font-size: 2.2rem;
+            font-weight: 900;
+        }
+        .admin-activity {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+        }
+        .admin-activity ul {
+            list-style: none;
+        }
+        .admin-activity ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-activity ul li:last-child {
+            border-bottom: none;
+        }
+        .admin-activity ul li i {
+            color: #667eea;
+            width: 20px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-card);
+            transform: translateX(calc(100% + 30px));
+            opacity: 0;
+            transition: all 0.4s ease;
+            min-width: 250px;
+            font-weight: 500;
+        }
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .toast.success {
+            border-color: #48bb78;
+        }
+        .toast.error {
+            border-color: #fc8181;
+        }
+        .toast.info {
+            border-color: #667eea;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            max-width: 520px;
+            width: 90%;
+            box-shadow: var(--shadow-card);
+            animation: fadeUp 0.3s ease;
+        }
+        .modal-box h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .modal-box .form-group {
+            margin-bottom: 16px;
+        }
+        .modal-box .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+        .modal-box .form-group input,
+        .modal-box .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .modal-box .form-group input:focus,
+        .modal-box .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .glass-header {
+                top: 10px;
+                padding: 10px 16px;
+                width: 96%;
+                border-radius: 40px;
+            }
+            .logo-brand {
+                font-size: 1.4rem;
+            }
+            .header-controls .btn-github-auth span {
+                display: none;
+            }
+            .header-controls button {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            .pricing-section h2 {
+                font-size: 2.2rem;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            .full-preview-overlay {
+                padding: 12px;
+            }
+            .full-preview-content {
+                padding: 16px;
+            }
+            .full-preview-content .site-preview {
+                padding: 20px;
+            }
+            .builder-tools {
+                grid-template-columns: 1fr;
+            }
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+            .project-type-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+            .welcome-banner {
+                padding: 20px;
+            }
+            .welcome-banner h2 {
+                font-size: 1.4rem;
+            }
+            .dashboard-tabs .tab-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            .notification-dropdown {
+                width: 280px;
+                right: -60px;
+            }
+            .domain-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .ambient-bg .orb {
+                filter: blur(80px);
+            }
+            .ambient-bg .orb:nth-child(1) {
+                width: 300px;
+                height: 300px;
+            }
+            .ambient-bg .orb:nth-child(2) {
+                width: 250px;
+                height: 250px;
+            }
+            .ambient-bg .orb:nth-child(3) {
+                width: 200px;
+                height: 200px;
+            }
+            .ambient-bg .orb:nth-child(4) {
+                width: 180px;
+                height: 180px;
+            }
+            .ambient-bg .orb:nth-child(5) {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* ===== RTL OVERRIDES ===== */
+        [dir="ltr"] {
+            text-align: left;
+        }
+        [dir="ltr"] .pricing-card .plan-features {
+            text-align: left;
+        }
+        [dir="ltr"] .hero-badge i {
+            margin-left: 0;
+            margin-right: 8px;
+        }
+        [dir="ltr"] .full-preview-toolbar .title {
+            flex-direction: row-reverse;
+        }
+        [dir="ltr"] .welcome-banner .emoji-big {
+            left: auto;
+            right: 30px;
+        }
+        [dir="ltr"] .notification-badge {
+            right: auto;
+            left: -4px;
+        }
+        [dir="ltr"] .notification-dropdown {
+            right: auto;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== AMBIENT BACKGROUND ===== -->
+    <div class="ambient-bg">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== FULL PREVIEW ===== -->
+    <div class="full-preview-overlay" id="fullPreviewOverlay">
+        <div class="full-preview-container">
+            <div class="full-preview-toolbar">
+                <div class="title">
+                    <i class="fas fa-eye"></i>
+                    <span>معاينة القالب - <span id="previewName">أعمال</span></span>
+                </div>
+                <div class="actions">
+                    <button class="btn-secondary btn-sm" onclick="closeFullPreview()">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                    <button class="btn-primary btn-sm" onclick="savePreviewEdits()">
+                        <i class="fas fa-save"></i> حفظ التعديلات
+                    </button>
+                </div>
+            </div>
+            <div class="full-preview-content">
+                <div class="site-preview" id="previewSite" style="--primary-color: #667eea;">
+                    <!-- Content will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <h3>🚀 إنشاء موقع جديد</h3>
+            <div class="form-group">
+                <label>اسم الموقع</label>
+                <input type="text" id="siteNameInput" placeholder="اسم موقعك" />
+            </div>
+            <div class="form-group">
+                <label>النطاق</label>
+                <input type="text" id="siteDomainInput" placeholder="example.com" />
+            </div>
+            <div class="form-group">
+                <label>اختر القالب</label>
+                <select id="siteTemplateSelect">
+                    <option value="أعمال">أعمال</option>
+                    <option value="بورتفوليو">بورتفوليو</option>
+                    <option value="مدونة">مدونة</option>
+                    <option value="متجر">متجر</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary btn-sm" onclick="closeModal()">إلغاء</button>
+                <button class="btn-primary btn-sm" onclick="createWebsite()">إنشاء ونشر</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== GLASS HEADER ===== -->
+    <header class="glass-header" id="glassHeader">
+        <div class="logo-brand" onclick="showSection('landing')">
+            <i class="fas fa-cloud"></i> HostCloud
+        </div>
+        <div class="header-controls">
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير الوضع">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <button class="icon-btn" onclick="toggleLanguage()" title="تغيير اللغة">
+                <i class="fas fa-globe"></i> <span id="langLabel">AR</span>
+            </button>
+            <!-- Notifications -->
+            <div class="notification-container" id="notificationContainer">
+                <button class="icon-btn" onclick="toggleNotifications()" title="الإشعارات">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notifBadge">3</span>
+                </button>
+                <div class="notification-dropdown" id="notifDropdown">
+                    <div class="notification-item">
+                        <i class="fas fa-check-circle notif-icon" style="color:#48bb78;"></i>
+                        تم تجديد شهادة SSL لموقع "مدونتي" بنجاح
+                        <div class="notif-time">منذ 5 دقائق</div>
+                    </div>
+                    <div class="notification-item">
+                        <i class="fas fa-chart-line notif-icon" style="color:#667eea;"></i>
+                        زيادة في الزيارات بنسبة 25% خلال آخر 24 ساعة
+                        <div class="notif-time">منذ ساعة</div>
+                    </div>
+                    <div class="notification-item">
+                        <i class="fas fa-rocket notif-icon" style="color:#f7971e;"></i>
+                        تم نشر موقع "متجري" بنجاح
+                        <div class="notif-time">منذ 3 ساعات</div>
+                    </div>
+                    <div class="notification-item">
+                        <i class="fas fa-info-circle notif-icon" style="color:#4facfe;"></i>
+                        تحديث جديد للقالب "أعمال" متاح
+                        <div class="notif-time">منذ يوم</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-github-large" style="padding:8px 16px;font-size:0.85rem;" onclick="handleGitHubLogin()">
+                <i class="fab fa-github"></i> <span>GitHub</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container" style="max-width:1280px;margin:0 auto;padding:0 24px;">
+
+        <!-- ========================================================= -->
+        <!-- ===== LANDING PAGE ===== -->
+        <!-- ========================================================= -->
+        <section id="landing" class="page-section active">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-rocket"></i> منصة الجيل الجديد للاستضافة
+                    </div>
+                    <h1 class="hero-title">
+                        استضف مواقعك<br>
+                        <span class="highlight">بكل احترافية</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        منصة متكاملة لإنشاء وإدارة المواقع مع قوالب احترافية، استضافة سريعة، وأدوات تطوير متقدمة.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn-primary" onclick="showSection('register')">
+                            <i class="fas fa-rocket"></i> ابدأ الآن مجاناً
+                        </button>
+                        <button class="btn-secondary" onclick="showSection('login')">
+                            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                        </button>
+                        <button class="btn-github-large" onclick="handleGitHubLogin()">
+                            <i class="fab fa-github"></i> سجل بـ GitHub واستضف مجاناً
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PRICING ===== -->
+            <div class="pricing-section">
+                <div class="section-label">اختر خطتك المناسبة</div>
+                <h2>خطط تناسب <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">احتياجاتك</span></h2>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="plan-name">💻 مجاني</div>
+                        <div class="plan-price">0 <small>ج.م/شهر</small></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-code"></i> تشغيل HTML فقط</li>
+                            <li><i class="fas fa-hdd"></i> 1 جيجابايت تخزين</li>
+                            <li><i class="fas fa-link"></i> نطاق فرعي مجاني</li>
+                            <li><i class="fas fa-palette"></i> قوالب أساسية</li>
+                        </ul>
+                        <button class="btn-secondary" onclick="showSection('register')">ابدأ مجاناً</button>
+                    </div>
+
+                    <div class="pricing-card popular">
+                        <div class="plan-name">🚀 احترافي</div>
+                        <div class="plan-price">149 <small>ج.م/شهر</small></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> تشغيل HTML + CSS + JS</li>
+                            <li><i class="fas fa-hdd"></i> 50 جيجابايت تخزين</li>
+                            <li><i class="fas fa-link"></i> نطاق مخصص</li>
+                            <li><i class="fas fa-palette"></i> قوالب مميزة</li>
+                            <li><i class="fas fa-headset"></i> دعم أولوية</li>
+                        </ul>
+                        <button class="btn-primary" onclick="showSection('register')">اختر الخطة</button>
+                    </div>
+
+                    <div class="pricing-card gold">
+                        <div class="plan-name">👑 برو ماكس</div>
+                        <div class="plan-price">10,000 <small>ج.م/شهر</small></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-infinity gold-icon"></i> تشغيل جميع البرامج</li>
+                            <li><i class="fas fa-brain gold-icon"></i> نماذج ذكاء اصطناعي متقدمة</li>
+                            <li><i class="fas fa-globe gold-icon"></i> دومين أساسي</li>
+                            <li><i class="fas fa-hdd gold-icon"></i> تخزين غير محدود</li>
+                            <li><i class="fas fa-robot gold-icon"></i> مساعد AI مدمج</li>
+                            <li><i class="fas fa-crown gold-icon"></i> دعم VIP 24/7</li>
+                        </ul>
+                        <button class="btn-gold" onclick="showSection('register')">اشترك الآن</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ===== LOGIN PAGE ===== -->
+        <!-- ========================================================= -->
+        <section id="login" class="page-section">
+            <div class="auth-form">
+                <h2>🔐 تسجيل الدخول</h2>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="example@email.com" />
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" />
+                </div>
+                <button class="btn-primary" onclick="handleLogin()">دخول</button>
+
+                <div class="social-login">
+                    <button onclick="handleGitHubLogin()"><i class="fab fa-github"></i> GitHub</button>
+                    <button onclick="handleGoogleLogin()"><i class="fab fa-google"></i> Google</button>
+                </div>
+
+                <div class="switch-link" onclick="showSection('register')">ليس لديك حساب؟ سجل الآن</div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ===== REGISTER PAGE ===== -->
+        <!-- ========================================================= -->
+        <section id="register" class="page-section">
+            <div class="auth-form">
+                <h2>✨ إنشاء حساب جديد</h2>
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="regName" placeholder="أحمد محمد" />
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="regEmail" placeholder="example@email.com" />
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" />
+                </div>
+                <button class="btn-primary" onclick="handleRegister()">إنشاء حساب</button>
+
+                <div class="social-login">
+                    <button onclick="handleGitHubLogin()"><i class="fab fa-github"></i> GitHub</button>
+                    <button onclick="handleGoogleLogin()"><i class="fab fa-google"></i> Google</button>
+                </div>
+
+                <div class="switch-link" onclick="showSection('login')">لديك حساب؟ سجل دخول</div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ===== DASHBOARD ===== -->
+        <!-- ========================================================= -->
+        <section id="dashboard" class="page-section">
+            <div class="dashboard-container">
+
+                <!-- WELCOME BANNER -->
+                <div class="welcome-banner">
+                    <div class="emoji-big">🚀</div>
+                    <h2>👋 أهلاً بك في HostCloud، <span id="userNameDisplay">أحمد</span>!</h2>
+                    <p>🌟 أنت الآن في قلب منصة الاستضافة الاحترافية. اختر قالبك المفضل، عدل عليه كما تحب، وانشر موقعك في ثواني.</p>
+                    <p style="font-size:0.95rem;margin-top:8px;opacity:0.9;">💡 تذكر: لديك <strong id="siteCountDisplay">4</strong> مواقع منشورة و <strong id="draftCountDisplay">2</strong> قيد التطوير. استمر في الإبداع!</p>
+                </div>
+
+                <div class="dashboard-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
+                    <div class="client-badge">
+                        <span>أهلاً، <span id="userNameBadge">أحمد</span></span>
+                        <div class="avatar" id="userAvatar">أ</div>
+                        <button class="btn-secondary btn-sm" onclick="logout()">تسجيل خروج</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" onclick="switchTab('overview', this)"><i class="fas fa-chart-pie"></i> نظرة عامة</button>
+                    <button class="tab-btn" onclick="switchTab('templates', this)"><i class="fas fa-paint-brush"></i> القوالب</button>
+                    <button class="tab-btn" onclick="switchTab('domains', this)"><i class="fas fa-globe"></i> النطاقات</button>
+                    <button class="tab-btn" onclick="switchTab('settings', this)"><i class="fas fa-cog"></i> الإعدادات</button>
+                </div>
+
+                <!-- ===== TAB 1: OVERVIEW ===== -->
+                <div class="tab-content active" id="tab-overview">
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card"><div class="number" id="statSites">4</div><div class="label">المواقع المنشورة</div></div>
+                        <div class="stat-card"><div class="number" id="statDrafts">2</div><div class="label">قيد التطوير</div></div>
+                        <div class="stat-card"><div class="number" id="statTemplates">12</div><div class="label">قوالب متاحة</div></div>
+                        <div class="stat-card"><div class="number" id="statStorage">87%</div><div class="label">نسبة التخزين</div></div>
+                    </div>
+
+                    <!-- Traffic -->
+                    <div class="traffic-section">
+                        <div class="traffic-header">
+                            <h3><i class="fas fa-chart-line"></i> إحصائيات الزيارات</h3>
+                            <div class="traffic-stats">
+                                <div class="traffic-stat-item"><div class="value" id="totalVisitors">8,247</div><div class="label">إجمالي الزوار</div></div>
+                                <div class="traffic-stat-item"><div class="value" id="todayVisitors">342</div><div class="label">زوار اليوم</div></div>
+                                <div class="traffic-stat-item"><div class="value" id="pageViews">24,891</div><div class="label">مشاهدات الصفحات</div></div>
+                            </div>
+                        </div>
+                        <div class="traffic-chart-container"><canvas id="trafficChart"></canvas></div>
+                    </div>
+
+                    <!-- Subscription -->
+                    <div class="subscription-section">
+                        <h3 style="font-size:1.2rem;display:flex;align-items:center;gap:10px;"><i class="fas fa-gem" style="color:#667eea;"></i> تفاصيل الباقة</h3>
+                        <div class="subscription-details" id="subscriptionDetails">
+                            <div class="subscription-item">
+                                <div class="sub-label">الباقة الحالية</div>
+                                <div class="sub-value"><span class="badge-plan" id="currentPlan">احترافي</span></div>
+                            </div>
+                            <div class="subscription-item">
+                                <div class="sub-label">تاريخ التجديد</div>
+                                <div class="sub-value" id="renewalDate">15 ديسمبر 2026</div>
+                                <div class="renewal-countdown" id="renewalCountdown"><i class="fas fa-clock"></i> متبقي: 130 يوم</div>
+                            </div>
+                            <div class="subscription-item">
+                                <div class="sub-label">الحالة</div>
+                                <div class="sub-value" style="color:#48bb78;" id="subscriptionStatus"><i class="fas fa-check-circle"></i> نشطة</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Websites -->
+                    <div class="websites-list">
+                        <div class="header">
+                            <h3>🌐 مواقعي</h3>
+                            <button class="btn-primary btn-sm" onclick="switchTab('templates', document.querySelector('.tab-btn:nth-child(2)'))"><i class="fas fa-plus"></i> موقع جديد</button>
+                        </div>
+                        <div id="websitesList">
+                            <div class="website-item">
+                                <div class="info"><i class="fas fa-globe"></i><div><div class="name">مدونتي</div><div class="domain">ahmed-blog.hostcloud.com</div></div></div>
+                                <span class="status-badge deployed">منشور</span>
+                                <div><button class="btn-secondary btn-sm"><i class="fas fa-edit"></i></button></div>
+                            </div>
+                            <div class="website-item">
+                                <div class="info"><i class="fas fa-shopping-cart"></i><div><div class="name">متجري</div><div class="domain">shop-ahmed.hostcloud.com</div></div></div>
+                                <span class="status-badge deployed">منشور</span>
+                                <div><button class="btn-secondary btn-sm"><i class="fas fa-edit"></i></button></div>
+                            </div>
+                            <div class="website-item">
+                                <div class="info"><i class="fas fa-briefcase"></i><div><div class="name">بورتفوليو</div><div class="domain">work.hostcloud.com</div></div></div>
+                                <span class="status-badge draft">مسودة</span>
+                                <div><button class="btn-secondary btn-sm"><i class="fas fa-edit"></i></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TAB 2: TEMPLATES ===== -->
+                <div class="tab-content" id="tab-templates">
+                    <div class="template-selector">
+                        <h3><i class="fas fa-paint-brush"></i> 🎨 اختر قالباً لمشروعك الجديد</h3>
+                        <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.95rem;">
+                            ✨ اختر نوع مشروعك من الأسفل، ثم اختر القالب المناسب، وابدأ في التعديل والنشر فوراً!
+                        </p>
+                        <div class="project-type-grid">
+                            <button class="project-type-btn active" onclick="filterTemplates('all', this)"><i class="fas fa-th-large"></i> الكل</button>
+                            <button class="project-type-btn" onclick="filterTemplates('company', this)"><i class="fas fa-building"></i> شركة</button>
+                            <button class="project-type-btn" onclick="filterTemplates('store', this)"><i class="fas fa-store"></i> محل</button>
+                            <button class="project-type-btn" onclick="filterTemplates('ecommerce', this)"><i class="fas fa-shopping-cart"></i> متجر</button>
+                            <button class="project-type-btn" onclick="filterTemplates('blog', this)"><i class="fas fa-newspaper"></i> مدونة</button>
+                            <button class="project-type-btn" onclick="filterTemplates('portfolio', this)"><i class="fas fa-user-tie"></i> بورتفوليو</button>
+                        </div>
+                        <div class="template-grid" id="templateGrid"></div>
+                    </div>
+                </div>
+
+                <!-- ===== TAB 3: DOMAINS ===== -->
+                <div class="tab-content" id="tab-domains">
+                    <div class="domain-section">
+                        <h3><i class="fas fa-globe"></i> إدارة النطاقات</h3>
+                        <div class="domain-box">
+                            <div>
+                                <div class="domain-label">النطاق الفرعي الخاص بك</div>
+                                <div class="domain-value" id="subDomain">ahmed-blog.hostcloud.com</div>
+                            </div>
+                        </div>
+                        <div class="domain-box" style="margin-top:16px;flex-wrap:wrap;">
+                            <div style="flex:1;min-width:200px;">
+                                <div class="domain-label">ربط نطاق مخصص (Custom Domain)</div>
+                                <input type="text" class="domain-input" id="customDomainInput" placeholder="مثال: mywebsite.com" />
+                            </div>
+                            <button class="btn-primary btn-sm" onclick="connectCustomDomain()">
+                                <i class="fas fa-link"></i> ربط النطاق
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TAB 4: SETTINGS ===== -->
+                <div class="tab-content" id="tab-settings">
+                    <div class="settings-section">
+                        <h3><i class="fas fa-user-cog"></i> إعدادات الحساب</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>الاسم الكامل</label>
+                                <input type="text" id="settingsName" value="أحمد محمد" />
+                            </div>
+                            <div class="form-group">
+                                <label>البريد الإلكتروني</label>
+                                <input type="email" id="settingsEmail" value="ahmed@example.com" />
+                            </div>
+                            <div class="form-group">
+                                <label>كلمة المرور الجديدة</label>
+                                <input type="password" id="settingsPassword" placeholder="••••••••" />
+                            </div>
+                            <button class="btn-primary btn-sm" onclick="saveSettings()">
+                                <i class="fas fa-save"></i> حفظ التغييرات
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-key"></i> مفتاح الـ API</h3>
+                        <div class="api-key-box">
+                            <span class="api-key-value" id="apiKeyDisplay">hc_live_8f7d3e9a2b1c4d5e6f7g8h9i0j</span>
+                            <button class="copy-btn" onclick="copyApiKey()">
+                                <i class="fas fa-copy"></i> نسخ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ===== ADMIN ===== -->
+        <!-- ========================================================= -->
+        <section id="admin" class="page-section">
+            <div class="admin-preview">
+                <h2 style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><i class="fas fa-user-cog" style="color:#667eea;"></i> لوحة الإدارة</h2>
+                <p style="color:var(--text-muted);margin-bottom:30px;">إدارة المستخدمين، السيرفرات، والمواقع المستضافة.</p>
+                <div class="admin-stats">
+                    <div class="admin-stat"><h4><i class="fas fa-users"></i> المستخدمين</h4><div class="big-number">24</div><small style="color:var(--text-muted);">5 نشطاء اليوم</small></div>
+                    <div class="admin-stat"><h4><i class="fas fa-server"></i> السيرفرات</h4><div class="big-number">3</div><small style="color:var(--text-muted);">جميعها نشطة</small></div>
+                    <div class="admin-stat"><h4><i class="fas fa-globe"></i> المواقع</h4><div class="big-number">87</div><small style="color:var(--text-muted);">منشورة: 62</small></div>
+                    <div class="admin-stat"><h4><i class="fas fa-chart-line"></i> الإيرادات</h4><div class="big-number">$4.2K</div><small style="color:var(--text-muted);">هذا الشهر</small></div>
+                </div>
+                <div class="admin-activity">
+                    <h4>📋 آخر النشاطات</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle" style="color:#48bb78;"></i> نشر موقع "متجري" بواسطة أحمد</li>
+                        <li><i class="fas fa-user-plus" style="color:#667eea;"></i> مستخدم جديد: سارة علي</li>
+                        <li><i class="fas fa-server" style="color:#667eea;"></i> تم إضافة سيرفر جديد - أوروبا</li>
+                        <li><i class="fas fa-upload" style="color:#667eea;"></i> رفع تحديث قالب "شركة"</li>
+                    </ul>
+                </div>
+                <button class="btn-secondary" onclick="showSection('dashboard')" style="margin-top:24px;"><i class="fas fa-arrow-right"></i> العودة للوحة العميل</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ========================================================= -->
+    <script>
+        // =========================================================
+        // ===== CONFIGURATION =====
+        // =========================================================
+        const API_URL = 'http://localhost:5000/api'; // تغيير حسب سيرفرك
+
+        // =========================================================
+        // ===== GLOBAL STATE =====
+        // =========================================================
+        let currentLang = 'ar';
+        let currentTheme = 'dark';
+        let currentProjectType = 'all';
+        let previewEdits = {};
+        let currentUser = null;
+        let authToken = localStorage.getItem('hostcloud_token');
+
+        // =========================================================
+        // ===== TEMPLATES DATA =====
+        // =========================================================
+        const templates = [
+            { id: 1, name: 'شركة تقنية', type: 'company', icon: 'fa-building', color: '#667eea' },
+            { id: 2, name: 'شركة استشارات', type: 'company', icon: 'fa-handshake', color: '#f093fb' },
+            { id: 3, name: 'محل أزياء', type: 'store', icon: 'fa-tshirt', color: '#4facfe' },
+            { id: 4, name: 'محل إلكترونيات', type: 'store', icon: 'fa-laptop', color: '#43e97b' },
+            { id: 5, name: 'متجر إلكتروني', type: 'ecommerce', icon: 'fa-shopping-cart', color: '#fa709a' },
+            { id: 6, name: 'متجر منتجات', type: 'ecommerce', icon: 'fa-box', color: '#a18cd1' },
+            { id: 7, name: 'مدونة تقنية', type: 'blog', icon: 'fa-blog', color: '#fccb90' },
+            { id: 8, name: 'مدونة شخصية', type: 'blog', icon: 'fa-user-edit', color: '#89f7fe' },
+            { id: 9, name: 'بورتفوليو إبداعي', type: 'portfolio', icon: 'fa-paint-brush', color: '#ffecd2' },
+            { id: 10, name: 'بورتفوليو أعمال', type: 'portfolio', icon: 'fa-briefcase', color: '#a8edea' },
+        ];
+
+        // =========================================================
+        // ===== API HELPER FUNCTIONS =====
+        // =========================================================
+        async function apiRequest(endpoint, method = 'GET', data = null, requiresAuth = false) {
+            const url = `${API_URL}${endpoint}`;
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+
+            if (requiresAuth) {
+                const token = localStorage.getItem('hostcloud_token');
+                if (!token) {
+                    throw new Error('غير مصرح: يرجى تسجيل الدخول');
+                }
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const options = {
+                method,
+                headers,
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(url, options);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || result.error || 'حدث خطأ في الطلب');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // =========================================================
+        // ===== SECTION SWITCHING =====
+        // =========================================================
+        function showSection(id) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // =========================================================
+        // ===== TAB SWITCHING =====
+        // =========================================================
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        // =========================================================
+        // ===== NOTIFICATIONS =====
+        // =========================================================
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notifDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('notificationContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('notifDropdown').classList.remove('open');
+            }
+        });
+
+        // =========================================================
+        // ===== THEME TOGGLE =====
+        // =========================================================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                currentTheme = 'light';
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('hostcloud-theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                currentTheme = 'dark';
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('hostcloud-theme', 'dark');
+            }
+        }
+
+        // =========================================================
+        // ===== LANGUAGE TOGGLE =====
+        // =========================================================
+        function toggleLanguage() {
+            const html = document.documentElement;
+            const label = document.getElementById('langLabel');
+            if (currentLang === 'ar') {
+                html.dir = 'ltr';
+                html.lang = 'en';
+                currentLang = 'en';
+                label.textContent = 'EN';
+                localStorage.setItem('hostcloud-lang', 'en');
+            } else {
+                html.dir = 'rtl';
+                html.lang = 'ar';
+                currentLang = 'ar';
+                label.textContent = 'AR';
+                localStorage.setItem('hostcloud-lang', 'ar');
+            }
+        }
+
+        // =========================================================
+        // ===== TOAST =====
+        // =========================================================
+        function showToast(msg, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, duration);
+        }
+
+        // =========================================================
+        // ===== AUTH FUNCTIONS (REAL BACKEND) =====
+        // =========================================================
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email) {
+                showToast('⚠️ الرجاء إدخال البريد الإلكتروني', 'error');
+                return;
+            }
+            if (!password) {
+                showToast('⚠️ الرجاء إدخال كلمة المرور', 'error');
+                return;
+            }
+
+            try {
+                showToast('🔄 جاري تسجيل الدخول...', 'info');
+                const result = await apiRequest('/auth/login', 'POST', { email, password });
+                
+                if (result.token) {
+                    localStorage.setItem('hostcloud_token', result.token);
+                    authToken = result.token;
+                    currentUser = result.user;
+                    
+                    showToast('✅ تم تسجيل الدخول بنجاح! مرحباً بك في HostCloud.', 'success');
+                    updateDashboardUI(result.user);
+                    setTimeout(() => showSection('dashboard'), 500);
+                }
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            if (!name) {
+                showToast('⚠️ الرجاء إدخال الاسم الكامل', 'error');
+                return;
+            }
+            if (!email) {
+                showToast('⚠️ الرجاء إدخال البريد الإلكتروني', 'error');
+                return;
+            }
+            if (!password || password.length < 6) {
+                showToast('⚠️ الرجاء إدخال كلمة مرور قوية (6 أحرف على الأقل)', 'error');
+                return;
+            }
+
+            try {
+                showToast('🔄 جاري إنشاء الحساب...', 'info');
+                const result = await apiRequest('/auth/register', 'POST', { name, email, password });
+                
+                if (result.token) {
+                    localStorage.setItem('hostcloud_token', result.token);
+                    authToken = result.token;
+                    currentUser = result.user;
+                    
+                    showToast('🎉 تم إنشاء الحساب بنجاح! أهلاً بك في HostCloud.', 'success');
+                    updateDashboardUI(result.user);
+                    setTimeout(() => showSection('dashboard'), 500);
+                }
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        async function handleGitHubLogin() {
+            try {
+                showToast('🔄 جاري التوجيه إلى GitHub...', 'info');
+                // Redirect to GitHub OAuth
+                window.location.href = `${API_URL}/auth/github`;
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        async function handleGoogleLogin() {
+            try {
+                showToast('🔄 جاري التوجيه إلى Google...', 'info');
+                // Redirect to Google OAuth
+                window.location.href = `${API_URL}/auth/google`;
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('hostcloud_token');
+            authToken = null;
+            currentUser = null;
+            showToast('👋 تم تسجيل الخروج', 'info');
+            setTimeout(() => showSection('landing'), 500);
+        }
+
+        // =========================================================
+        // ===== DASHBOARD UI UPDATE =====
+        // =========================================================
+        function updateDashboardUI(user) {
+            if (!user) return;
+            
+            document.getElementById('userNameDisplay').textContent = user.name || 'أحمد';
+            document.getElementById('userNameBadge').textContent = user.name || 'أحمد';
+            document.getElementById('userAvatar').textContent = (user.name || 'أ').charAt(0);
+            document.getElementById('settingsName').value = user.name || '';
+            document.getElementById('settingsEmail').value = user.email || '';
+            
+            // Update stats if available
+            if (user.stats) {
+                document.getElementById('statSites').textContent = user.stats.sites || 0;
+                document.getElementById('statDrafts').textContent = user.stats.drafts || 0;
+                document.getElementById('siteCountDisplay').textContent = user.stats.sites || 0;
+                document.getElementById('draftCountDisplay').textContent = user.stats.drafts || 0;
+            }
+            
+            // Update subscription
+            if (user.subscription) {
+                document.getElementById('currentPlan').textContent = user.subscription.plan || 'مجاني';
+                document.getElementById('renewalDate').textContent = user.subscription.renewalDate || 'غير محدد';
+                if (user.subscription.status === 'active') {
+                    document.getElementById('subscriptionStatus').innerHTML = '<i class="fas fa-check-circle"></i> نشطة';
+                    document.getElementById('subscriptionStatus').style.color = '#48bb78';
+                } else {
+                    document.getElementById('subscriptionStatus').innerHTML = '<i class="fas fa-exclamation-circle"></i> منتهية';
+                    document.getElementById('subscriptionStatus').style.color = '#fc8181';
+                }
+            }
+            
+            // Update subdomain
+            if (user.subdomain) {
+                document.getElementById('subDomain').textContent = user.subdomain;
+            }
+        }
+
+        // =========================================================
+        // ===== LOAD USER DATA =====
+        // =========================================================
+        async function loadUserData() {
+            const token = localStorage.getItem('hostcloud_token');
+            if (!token) return;
+
+            try {
+                const result = await apiRequest('/auth/me', 'GET', null, true);
+                if (result.user) {
+                    currentUser = result.user;
+                    updateDashboardUI(result.user);
+                }
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                localStorage.removeItem('hostcloud_token');
+                authToken = null;
+            }
+        }
+
+        // =========================================================
+        // ===== WEBSITE FUNCTIONS (REAL BACKEND) =====
+        // =========================================================
+        async function createWebsite() {
+            const name = document.getElementById('siteNameInput').value.trim();
+            const domain = document.getElementById('siteDomainInput').value.trim();
+            const template = document.getElementById('siteTemplateSelect').value;
+
+            if (!name) {
+                showToast('⚠️ الرجاء إدخال اسم الموقع', 'error');
+                return;
+            }
+
+            try {
+                closeModal();
+                showToast(`🚀 جاري إنشاء ونشر "${name}"...`, 'info');
+
+                const result = await apiRequest('/sites', 'POST', {
+                    name,
+                    domain: domain || `${name.replace(/\s/g, '-').toLowerCase()}.hostcloud.com`,
+                    template
+                }, true);
+
+                if (result.site) {
+                    showToast(`✅ تم نشر "${name}" بنجاح! 🎉`, 'success');
+                    // Add to websites list
+                    addWebsiteToList(result.site);
+                    // Update stats
+                    updateStatsAfterCreate();
+                }
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        function addWebsiteToList(site) {
+            const list = document.getElementById('websitesList');
+            const item = document.createElement('div');
+            item.className = 'website-item';
+            item.dataset.siteId = site.id;
+            item.innerHTML = `
+                <div class="info">
+                    <i class="fas fa-globe"></i>
+                    <div>
+                        <div class="name">${site.name}</div>
+                        <div class="domain">${site.domain}</div>
+                    </div>
+                </div>
+                <span class="status-badge ${site.status === 'deployed' ? 'deployed' : 'draft'}">${site.status === 'deployed' ? 'منشور' : 'مسودة'}</span>
+                <div>
+                    <button class="btn-secondary btn-sm" onclick="editWebsite('${site.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-secondary btn-sm" style="border-color:#fc8181;color:#fc8181;" onclick="deleteWebsite('${site.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        async function deleteWebsite(siteId) {
+            if (!confirm('هل أنت متأكد من حذف هذا الموقع؟')) return;
+
+            try {
+                await apiRequest(`/sites/${siteId}`, 'DELETE', null, true);
+                showToast('🗑️ تم حذف الموقع بنجاح', 'success');
+                // Remove from list
+                const item = document.querySelector(`[data-site-id="${siteId}"]`);
+                if (item) item.remove();
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        async function editWebsite(siteId) {
+            showToast('📝 جاري فتح المحرر...', 'info');
+            // Implement edit functionality
+        }
+
+        function updateStatsAfterCreate() {
+            const sites = document.getElementById('statSites');
+            const current = parseInt(sites.textContent);
+            sites.textContent = current + 1;
+            document.getElementById('siteCountDisplay').textContent = current + 1;
+        }
+
+        // =========================================================
+        // ===== DOMAIN MANAGEMENT (REAL BACKEND) =====
+        // =========================================================
+        async function connectCustomDomain() {
+            const domain = document.getElementById('customDomainInput').value.trim();
+            if (!domain) {
+                showToast('⚠️ الرجاء إدخال النطاق المخصص', 'error');
+                return;
+            }
+
+            try {
+                showToast(`🔗 جاري ربط النطاق "${domain}"...`, 'info');
+                const result = await apiRequest('/domains/connect', 'POST', { domain }, true);
+                
+                if (result.success) {
+                    showToast(`✅ تم ربط النطاق "${domain}" بنجاح!`, 'success');
+                    document.getElementById('customDomainInput').value = '';
+                }
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // =========================================================
+        // ===== SETTINGS (REAL BACKEND) =====
+        // =========================================================
+        async function saveSettings() {
+            const name = document.getElementById('settingsName').value.trim();
+            const email = document.getElementById('settingsEmail').value.trim();
+            const password = document.getElementById('settingsPassword').value.trim();
+
+            if (!name || !email) {
+                showToast('⚠️ الرجاء ملء جميع الحقول', 'error');
+                return;
+            }
+
+            try {
+                const data = { name, email };
+                if (password) data.password = password;
+
+                const result = await apiRequest('/auth/update', 'PUT', data, true);
+                
+                if (result.user) {
+                    showToast('💾 تم حفظ إعدادات الحساب بنجاح', 'success');
+                    if (password) {
+                        showToast('🔐 تم تغيير كلمة المرور بنجاح', 'success');
+                        document.getElementById('settingsPassword').value = '';
+                    }
+                    currentUser = result.user;
+                    updateDashboardUI(result.user);
+                }
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // =========================================================
+        // ===== API KEY =====
+        // =========================================================
+        function copyApiKey() {
+            const key = document.getElementById('apiKeyDisplay').textContent;
+            navigator.clipboard.writeText(key).then(() => {
+                showToast('📋 تم نسخ مفتاح API', 'success');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = key;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('📋 تم نسخ مفتاح API', 'success');
+            });
+        }
+
+        // =========================================================
+        // ===== FILTER TEMPLATES =====
+        // =========================================================
+        function filterTemplates(type, btn) {
+            currentProjectType = type;
+            document.querySelectorAll('.project-type-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const grid = document.getElementById('templateGrid');
+            const filtered = type === 'all' ? templates : templates.filter(t => t.type === type);
+            grid.innerHTML = filtered.map(t => `
+                <div class="template-card" onclick="selectTemplate(this, '${t.name}')">
+                    <div class="thumb" style="background:${t.color};">
+                        <i class="fas ${t.icon}"></i>
+                        <span class="badge"><i class="fas fa-eye"></i> معاينة</span>
+                    </div>
+                    <div class="info">
+                        <h4>${t.name}</h4>
+                        <p>قالب احترافي لـ ${t.type}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-primary btn-sm" onclick="event.stopPropagation();openFullPreview('${t.name}')">
+                            <i class="fas fa-eye"></i> معاينة
+                        </button>
+                        <button class="btn-secondary btn-sm" onclick="event.stopPropagation();useTemplate('${t.name}')">
+                            <i class="fas fa-check"></i> استخدام
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =========================================================
+        // ===== SELECT TEMPLATE =====
+        // =========================================================
+        function selectTemplate(el, name) {
+            document.querySelectorAll('.template-card').forEach(c => c.style.borderColor = 'var(--border-color)');
+            el.style.borderColor = '#667eea';
+            showToast(`✅ تم اختيار قالب "${name}"`, 'info');
+        }
+
+        function useTemplate(name) {
+            document.getElementById('siteTemplateSelect').value = name;
+            showToast(`✅ تم تطبيق قالب "${name}"`, 'success');
+            openModal();
+        }
+
+        // =========================================================
+        // ===== MODAL =====
+        // =========================================================
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+        }
+
+        // =========================================================
+        // ===== FULL PREVIEW =====
+        // =========================================================
+        function openFullPreview(name) {
+            const overlay = document.getElementById('fullPreviewOverlay');
+            document.getElementById('previewName').textContent = name;
+            
+            const saved = localStorage.getItem('hostcloud_preview_edits');
+            if (saved) {
+                try {
+                    previewEdits = JSON.parse(saved);
+                } catch(e) {
+                    previewEdits = {};
+                }
+            }
+            
+            const primaryColor = previewEdits.primaryColor || '#667eea';
+            const site = document.getElementById('previewSite');
+            site.style.setProperty('--primary-color', primaryColor);
+            
+            site.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+                    <h1 class="editable" contenteditable="true" data-edit="title">${previewEdits.title || name + ' - موقع احترافي'}</h1>
+                    <button class="editable-btn" contenteditable="true" data-edit="btn-text" style="background:${primaryColor};">${previewEdits.btnText || 'تواصل معنا'}</button>
+                </div>
+                <p class="editable" contenteditable="true" data-edit="desc">${previewEdits.desc || 'هذا موقع تجريبي يمكنك تعديل جميع النصوص والعناصر الموجودة فيه.'}</p>
+                <div class="demo-img editable-image" style="background:${primaryColor};">
+                    ${previewEdits.image ? `<img src="${previewEdits.image}" />` : `<i class="fas fa-image"></i>`}
+                </div>
+                <p class="editable" contenteditable="true" data-edit="footer">${previewEdits.footer || 'انقر على أي نص لتعديله مباشرة. استخدم أدوات التحرير لتخصيص موقعك.'}</p>
+                
+                <div class="builder-tools">
+                    <div class="color-picker-tool">
+                        <h5><i class="fas fa-palette"></i> تغيير الألوان الرئيسية</h5>
+                        <div class="color-options">
+                            <input type="color" value="${primaryColor}" onchange="updatePrimaryColor(this.value)" />
+                        </div>
+                        <div class="color-presets">
+                            <div class="preset" style="background:#667eea;" onclick="updatePrimaryColor('#667eea')"></div>
+                            <div class="preset" style="background:#f093fb;" onclick="updatePrimaryColor('#f093fb')"></div>
+                            <div class="preset" style="background:#4facfe;" onclick="updatePrimaryColor('#4facfe')"></div>
+                            <div class="preset" style="background:#43e97b;" onclick="updatePrimaryColor('#43e97b')"></div>
+                            <div class="preset" style="background:#fa709a;" onclick="updatePrimaryColor('#fa709a')"></div>
+                            <div class="preset" style="background:#f7971e;" onclick="updatePrimaryColor('#f7971e')"></div>
+                        </div>
+                    </div>
+                    <div class="builder-tool">
+                        <h5><i class="fas fa-image"></i> تغيير الصورة</h5>
+                        <div class="upload-area" onclick="document.getElementById('previewFileInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p style="font-size:0.8rem;">رفع صورة</p>
+                        </div>
+                        <input type="file" id="previewFileInput" accept="image/*" />
+                    </div>
+                    <div class="builder-tool">
+                        <h5><i class="fas fa-edit"></i> تحرير النصوص</h5>
+                        <div class="toolbar-btns">
+                            <button onclick="execPreviewCmd('bold')"><b>غ</b></button>
+                            <button onclick="execPreviewCmd('italic')"><i>م</i></button>
+                            <button onclick="execPreviewCmd('underline')"><u>س</u></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('previewFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = document.querySelector('.editable-image');
+                        if (img) {
+                            img.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;" />`;
+                            previewEdits.image = ev.target.result;
+                            showToast('✅ تم رفع الصورة بنجاح', 'success');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+                this.value = '';
+            });
+        }
+
+        function closeFullPreview() {
+            document.getElementById('fullPreviewOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+            collectPreviewEdits();
+            localStorage.setItem('hostcloud_preview_edits', JSON.stringify(previewEdits));
+        }
+
+        function collectPreviewEdits() {
+            const site = document.getElementById('previewSite');
+            const title = site.querySelector('[data-edit="title"]');
+            const desc = site.querySelector('[data-edit="desc"]');
+            const footer = site.querySelector('[data-edit="footer"]');
+            const btnText = site.querySelector('[data-edit="btn-text"]');
+            
+            if (title) previewEdits.title = title.textContent;
+            if (desc) previewEdits.desc = desc.textContent;
+            if (footer) previewEdits.footer = footer.textContent;
+            if (btnText) previewEdits.btnText = btnText.textContent;
+        }
+
+        function savePreviewEdits() {
+            collectPreviewEdits();
+            localStorage.setItem('hostcloud_preview_edits', JSON.stringify(previewEdits));
+            showToast('💾 تم حفظ جميع التعديلات بنجاح!', 'success');
+        }
+
+        function updatePrimaryColor(color) {
+            const site = document.getElementById('previewSite');
+            site.style.setProperty('--primary-color', color);
+            previewEdits.primaryColor = color;
+            
+            const btn = site.querySelector('.editable-btn');
+            if (btn) {
+                btn.style.background = color;
+            }
+            
+            const img = site.querySelector('.demo-img');
+            if (img && !img.querySelector('img')) {
+                img.style.background = color;
+            }
+            
+            const picker = site.querySelector('input[type="color"]');
+            if (picker) picker.value = color;
+            
+            showToast(`🎨 تم تغيير اللون الرئيسي`, 'info');
+        }
+
+        // =========================================================
+        // ===== PREVIEW TOOLS =====
+        // =========================================================
+        function execPreviewCmd(cmd) {
+            document.execCommand(cmd);
+        }
+
+        // =========================================================
+        // ===== CHART =====
+        // =========================================================
+        function initChart() {
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+                    datasets: [{
+                        label: 'الزوار',
+                        data: [1200, 1900, 1500, 2200, 2800, 2500, 3200, 3800, 3500, 4200, 4800, 8247],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'var(--border-color)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // =========================================================
+        // ===== RENEWAL COUNTDOWN =====
+        // =========================================================
+        function updateRenewal() {
+            const now = new Date();
+            const renewal = new Date(2026, 11, 15);
+            const days = Math.ceil((renewal - now) / (1000 * 60 * 60 * 24));
+            if (days > 0) {
+                document.getElementById('renewalCountdown').innerHTML = `<i class="fas fa-clock"></i> متبقي: ${days} يوم`;
+            }
+        }
+
+        // =========================================================
+        // ===== SIMULATE TRAFFIC =====
+        // =========================================================
+        function simulateTraffic() {
+            const today = document.getElementById('todayVisitors');
+            const current = parseInt(today.textContent);
+            today.textContent = current + Math.floor(Math.random() * 3) + 1;
+        }
+
+        // =========================================================
+        // ===== SIMULATE NOTIFICATIONS =====
+        // =========================================================
+        function addNotification() {
+            const notifs = [
+                { icon: 'fa-check-circle', color: '#48bb78', text: 'تم تجديد شهادة SSL لموقع "مدونتي" بنجاح', time: 'الآن' },
+                { icon: 'fa-chart-line', color: '#667eea', text: 'زيارة جديدة لموقعك "متجري"', time: 'منذ دقيقة' },
+                { icon: 'fa-rocket', color: '#f7971e', text: 'تم نشر موقع "بورتفوليو" بنجاح', time: 'منذ 5 دقائق' },
+            ];
+            
+            const randomNotif = notifs[Math.floor(Math.random() * notifs.length)];
+            const badge = document.getElementById('notifBadge');
+            const current = parseInt(badge.textContent);
+            badge.textContent = current + 1;
+            
+            const dropdown = document.getElementById('notifDropdown');
+            const item = document.createElement('div');
+            item.className = 'notification-item';
+            item.innerHTML = `
+                <i class="fas ${randomNotif.icon} notif-icon" style="color:${randomNotif.color};"></i>
+                ${randomNotif.text}
+                <div class="notif-time">${randomNotif.time}</div>
+            `;
+            dropdown.insertBefore(item, dropdown.firstChild);
+            
+            while (dropdown.children.length > 8) {
+                dropdown.removeChild(dropdown.lastChild);
+            }
+        }
+
+        // =========================================================
+        // ===== CHECK AUTH ON LOAD =====
+        // =========================================================
+        async function checkAuth() {
+            const token = localStorage.getItem('hostcloud_token');
+            if (token) {
+                try {
+                    await loadUserData();
+                    // If we're on a page that shows dashboard, switch to it
+                    if (document.getElementById('dashboard').classList.contains('active')) {
+                        // Already on dashboard
+                    }
+                } catch (error) {
+                    localStorage.removeItem('hostcloud_token');
+                }
+            }
+        }
+
+        // =========================================================
+        // ===== INIT =====
+        // =========================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load preferences
+            const savedTheme = localStorage.getItem('hostcloud-theme');
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                currentTheme = 'light';
+                document.getElementById('themeIcon').className = 'fas fa-sun';
+            }
+            const savedLang = localStorage.getItem('hostcloud-lang');
+            if (savedLang === 'en') {
+                document.documentElement.dir = 'ltr';
+                document.documentElement.lang = 'en';
+                currentLang = 'en';
+                document.getElementById('langLabel').textContent = 'EN';
+            }
+
+            // Check authentication
+            checkAuth();
+
+            // Initialize templates
+            filterTemplates('all', document.querySelector('.project-type-btn.active'));
+            showSection('landing');
+            setTimeout(() => { initChart(); updateRenewal(); }, 200);
+            setInterval(simulateTraffic, 5000);
+            setInterval(updateRenewal, 86400000);
+            setInterval(addNotification, 30000);
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('glassHeader');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        });
+
+        // Close preview with Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullPreview();
+                closeModal();
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>
