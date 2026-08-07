@@ -117,6 +117,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // =========================================================
+// ===== STATIC FILE SERVING (NEW) =====
+// =========================================================
+// Serve static files from the current directory
+app.use(express.static(__dirname));
+
+// Serve index.html as the default page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Also serve index.html for any non-API routes (SPA support)
+app.get('*', (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/')) {
+        return next();
+    }
+    // Skip static files (they will be handled by express.static)
+    if (req.path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+        return next();
+    }
+    // Send index.html for all other routes (SPA support)
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// =========================================================
 // ===== HELPER FUNCTIONS =====
 // =========================================================
 function generateApiKey() {
@@ -714,6 +739,7 @@ async function startServer() {
         app.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);
             console.log(`📊 API Documentation: http://localhost:${PORT}/api/health`);
+            console.log(`🌐 Frontend: http://localhost:${PORT}`);
             console.log('\n📝 Demo Account:');
             console.log('   Email: demo@hostcloud.com');
             console.log('   Password: demo123456');
