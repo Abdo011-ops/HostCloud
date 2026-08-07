@@ -1985,17 +1985,17 @@
                         </div>
                         <div id="websitesList">
                             <div class="website-item">
-                                <div class="info"><i class="fas fa-globe"></i><div><div class="name">مدونتي</div><div class="domain">ahmed-blog.hostcloud.com</div></div></div>
+                                <div class="info"><i class="fas fa-globe"></i><div><div class="name">مدونتي</div><div class="domain">demo-blog.hostcloud.com</div></div></div>
                                 <span class="status-badge deployed">منشور</span>
                                 <div><button class="btn-secondary btn-sm"><i class="fas fa-edit"></i></button></div>
                             </div>
                             <div class="website-item">
-                                <div class="info"><i class="fas fa-shopping-cart"></i><div><div class="name">متجري</div><div class="domain">shop-ahmed.hostcloud.com</div></div></div>
+                                <div class="info"><i class="fas fa-shopping-cart"></i><div><div class="name">متجري</div><div class="domain">demo-shop.hostcloud.com</div></div></div>
                                 <span class="status-badge deployed">منشور</span>
                                 <div><button class="btn-secondary btn-sm"><i class="fas fa-edit"></i></button></div>
                             </div>
                             <div class="website-item">
-                                <div class="info"><i class="fas fa-briefcase"></i><div><div class="name">بورتفوليو</div><div class="domain">work.hostcloud.com</div></div></div>
+                                <div class="info"><i class="fas fa-briefcase"></i><div><div class="name">بورتفوليو</div><div class="domain">demo-work.hostcloud.com</div></div></div>
                                 <span class="status-badge draft">مسودة</span>
                                 <div><button class="btn-secondary btn-sm"><i class="fas fa-edit"></i></button></div>
                             </div>
@@ -2029,7 +2029,7 @@
                         <div class="domain-box">
                             <div>
                                 <div class="domain-label">النطاق الفرعي الخاص بك</div>
-                                <div class="domain-value" id="subDomain">ahmed-blog.hostcloud.com</div>
+                                <div class="domain-value" id="subDomain">demo.hostcloud.com</div>
                             </div>
                         </div>
                         <div class="domain-box" style="margin-top:16px;flex-wrap:wrap;">
@@ -2114,9 +2114,10 @@
     <!-- ========================================================= -->
     <script>
         // =========================================================
-        // ===== CONFIGURATION =====
+        // ===== CONFIGURATION - RELATIVE PATHS (FIXED) =====
         // =========================================================
-        const API_URL = 'http://localhost:5000/api'; // تغيير حسب سيرفرك
+        // استخدام مسارات نسبية تبدأ بـ /api/ بدلاً من الروابط المطلقة
+        const API_URL = '/api';
 
         // =========================================================
         // ===== GLOBAL STATE =====
@@ -2145,9 +2146,10 @@
         ];
 
         // =========================================================
-        // ===== API HELPER FUNCTIONS =====
+        // ===== API HELPER FUNCTIONS (RELATIVE PATHS) =====
         // =========================================================
         async function apiRequest(endpoint, method = 'GET', data = null, requiresAuth = false) {
+            // استخدام المسارات النسبية
             const url = `${API_URL}${endpoint}`;
             const headers = {
                 'Content-Type': 'application/json',
@@ -2881,10 +2883,6 @@
             if (token) {
                 try {
                     await loadUserData();
-                    // If we're on a page that shows dashboard, switch to it
-                    if (document.getElementById('dashboard').classList.contains('active')) {
-                        // Already on dashboard
-                    }
                 } catch (error) {
                     localStorage.removeItem('hostcloud_token');
                 }
